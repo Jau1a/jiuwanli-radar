@@ -27,15 +27,16 @@ function loadConfig() {
     } catch (e) { /* 忽略本地配置损坏 */ }
   }
   const env = process.env;
-  if (env.SMTP_HOST) cfg.smtp.host = env.SMTP_HOST;
-  if (env.SMTP_PORT) cfg.smtp.port = parseInt(env.SMTP_PORT, 10) || 465;
-  if (env.SMTP_USER) cfg.smtp.user = env.SMTP_USER;
-  if (env.SMTP_PASS) cfg.smtp.pass = env.SMTP_PASS;
-  if (env.SMTP_TO) cfg.to = env.SMTP_TO;
-  if (env.SMTP_FROM) cfg.from = env.SMTP_FROM;
-  if (env.API_KEY) cfg.api.key = env.API_KEY;
-  if (env.API_BASE_URL) cfg.api.baseUrl = env.API_BASE_URL;
-  if (env.API_MODEL) cfg.api.model = env.API_MODEL;
+  const clean = (v) => (typeof v === 'string' ? v.trim() : v);
+  if (env.SMTP_HOST) cfg.smtp.host = clean(env.SMTP_HOST);
+  if (env.SMTP_PORT) cfg.smtp.port = parseInt(clean(env.SMTP_PORT), 10) || 465;
+  if (env.SMTP_USER) cfg.smtp.user = clean(env.SMTP_USER);
+  if (env.SMTP_PASS) cfg.smtp.pass = clean(env.SMTP_PASS);
+  if (env.SMTP_TO) cfg.to = clean(env.SMTP_TO);
+  if (env.SMTP_FROM) cfg.from = clean(env.SMTP_FROM);
+  if (env.API_KEY) cfg.api.key = clean(env.API_KEY);
+  if (env.API_BASE_URL) cfg.api.baseUrl = clean(env.API_BASE_URL);
+  if (env.API_MODEL) cfg.api.model = clean(env.API_MODEL);
   return cfg;
 }
 
