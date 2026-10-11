@@ -1,0 +1,10 @@
+node_modules/
+.npm-cache/
+reports/
+config.json
+probe-sources.js
+probe-sources2.js
+probe-sources3.js
+test-fetch.js
+register-task.ps1
+deploy-cloud.ps1

@@ -1,0 +1,11 @@
+{
+  "name": "jiuwanli-radar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "九万里选题雷达：抓新闻 -> AI生成选题推荐 -> 邮件推送",
+  "main": "run-daily.js",
+  "dependencies": {
+    "iconv-lite": "^0.6.3",
+    "nodemailer": "^7.0.1"
+  }
+}
