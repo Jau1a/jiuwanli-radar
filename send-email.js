@@ -20,7 +20,7 @@ async function sendEmail(cfg, dateStr, report) {
     secure: cfg.smtp.secure !== false,
     auth: { user: cfg.smtp.user, pass: cfg.smtp.pass }
   });
-  const info = await transporter.sendMail({
+  const mail = {
     from: cfg.from || cfg.smtp.user,
     to: cfg.to,
     subject: `【九万里选题雷达】${dateStr}`,
@@ -30,8 +30,16 @@ async function sendEmail(cfg, dateStr, report) {
       <hr style="border:none;border-top:1px solid #ddd;">
       <p style="color:#888;font-size:12px;">本报告由「九万里选题雷达」自动生成，仅供选题参考；动笔前请核实事实细节。</p>
     </div>`
-  });
-  return info;
+  };
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      return await transporter.sendMail(mail);
+    } catch (e) {
+      if (attempt === 2) throw e;
+      console.log('[mail] 第' + attempt + '次发送失败(' + e.message + ')，10秒后重试…');
+      await new Promise((r) => setTimeout(r, 10000));
+    }
+  }
 }
 
 module.exports = { sendEmail };

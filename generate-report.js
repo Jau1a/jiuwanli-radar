@@ -71,17 +71,29 @@ async function callOnce(cfg, prompt, extraUser) {
   return data.choices[0].message.content.trim();
 }
 
+async function callOnceWithRetry(cfg, prompt, extraUser) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      return await callOnce(cfg, prompt, extraUser);
+    } catch (e) {
+      if (attempt === 2) throw e;
+      console.log('[gen] API调用失败(' + e.message + ')，10秒后重试…');
+      await new Promise((r) => setTimeout(r, 10000));
+    }
+  }
+}
+
 async function generateReport(cfg, digest, dateStr) {
   if (!cfg.api || !cfg.api.key) throw new Error('未配置 api.key，请在 config.json 填入模型API密钥');
   let prompt = fs.readFileSync(path.join(__dirname, 'prompt.md'), 'utf8');
   prompt = prompt.replace(/\{\{DATE\}\}/g, dateStr).replace(/\{\{DIGEST\}\}/g, digest);
 
-  let report = await callOnce(cfg, prompt);
+  let report = await callOnceWithRetry(cfg, prompt);
   let check = verifyAgainstDigest(report, digest);
   if (!check.ok) {
     console.log(`[gen] 原题校验不通过(${check.matched}/${check.total})，自动重写一次…`);
     const fix = '上一版输出中部分【原题】与新闻列表不一致，请重新生成：每条【原题】必须一字不差照抄新闻列表中某条的标题，找不到对应条目的选题直接删除，严禁使用列表之外的新闻。';
-    report = await callOnce(cfg, prompt, fix);
+    report = await callOnceWithRetry(cfg, prompt, fix);
     check = verifyAgainstDigest(report, digest);
     if (!check.ok) {
       console.log(`[gen] 重写后仍不通过(${check.matched}/${check.total})，已加注人工核对提示`);
