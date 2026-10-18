@@ -139,7 +139,7 @@ async function fetchDigest(cfg) {
     uniq.push(it);
   }
   if (uniq.length === 0) return '';
-  const lines = uniq.map((it) => `【${it.source}${it.date ? ' ' + it.date : ''}】${it.title}`);
+  const lines = uniq.map((it) => `【${it.source}${it.date ? ' ' + it.date : ''}】${it.title}\n${it.link || ''}`.trim());
   return lines.join('\n');
 }
 
